@@ -7,7 +7,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -67,7 +66,8 @@ fun Wheel(
                             sweepAngle = anglePerItem,
                             useCenter = true
                         )
-                        val angle = (index * anglePerItem + anglePerItem / 2 + animatedRotation - 90f)
+                        val angle =
+                            (index * anglePerItem + anglePerItem / 2 + animatedRotation - 90f)
                         val radians = Math.toRadians(angle.toDouble())
 
                         val radius = size.minDimension / 2.5f
@@ -129,7 +129,6 @@ fun Wheel(
         }
 
     }
-
 
 
 }

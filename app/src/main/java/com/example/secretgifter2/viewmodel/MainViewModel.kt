@@ -51,9 +51,6 @@ class MainViewModel : ViewModel() {
     var selectedPerson by mutableStateOf<String?>(null)
         private set
 
-    fun selectPerson(name: String) {
-        selectedPerson = name
-    }
     var currentPlayerIndex by mutableStateOf(0)
         private set
 
