@@ -17,7 +17,9 @@ import androidx.compose.ui.unit.dp
 import com.example.secretgifter2.viewmodel.MainViewModel
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-
+import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.CardDefaults
 @Composable
 fun ResultScreen(viewModel: MainViewModel) {
     Column(
@@ -26,16 +28,34 @@ fun ResultScreen(viewModel: MainViewModel) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("All done!", style = MaterialTheme.typography.headlineMedium)
+        Text("All done! \uD83D\uDC4F", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn(
             modifier = Modifier.weight(1f)
         ) {
             items(viewModel.pairs.toList()) { (giver, receiver) ->
-                Text(
-                    "🎁 $giver → $receiver",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp),
+                    elevation = CardDefaults.cardElevation(6.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "$giver \uD83C\uDF81➡\uFE0F $receiver",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+                    }
+                }
             }
 
         }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -33,13 +34,29 @@ fun GameScreen(viewModel: MainViewModel) {
     ) {
         Spacer(modifier = Modifier.height(40.dp))
         Text(
-            text = "Give phone to: ${player ?: "-"}",
+            text = "📱 Give phone to:",
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Text(
+            text = player ?: "-",
+            style = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(16.dp))
         if (showResult && player != null) {
             val receiver = viewModel.pairs[player]
             if (receiver != null) {
-                Text("You gift for: $receiver")
+                Text(
+                    text = "🎁 You gift for:",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Text(
+                    text = receiver,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
 
         }
