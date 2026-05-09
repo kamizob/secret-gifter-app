@@ -6,14 +6,28 @@ import androidx.lifecycle.ViewModel
 import com.example.secretgifter2.data.model.Participant
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.secretgifter2.data.repository.SecretGifterRepository
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+
+import com.example.secretgifter2.data.remote.response.PairResponse
 
 class MainViewModel : ViewModel() {
     var currentScreen by mutableStateOf("SPLASH")
+    private val repository = SecretGifterRepository()
 
 
     fun startGame() {
-        generatePairs()
-        currentScreen = "GAME"
+        val currentRoomId = roomId ?: return
+        viewModelScope.launch {
+            try {
+                val response = repository.generatePairs(currentRoomId)
+                pairs = response.associate { it.giverName to it.receiverName }
+                currentScreen = "GAME"
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
     var participants = mutableStateListOf<Participant>()
         private set
@@ -27,26 +41,31 @@ class MainViewModel : ViewModel() {
             errorMessage = "A participant with this name already exists"
             return
         }
-        participants.add(Participant(trimmed))
-        pairs = emptyMap()
-        errorMessage = null
+        val currentRoomId = roomId ?: return
+        viewModelScope.launch {
+            try {
+                val response = repository.createParticipant(trimmed, currentRoomId)
+                participants.add(Participant(response.name))
+                errorMessage = null
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
     var pairs by mutableStateOf<Map<String, String>>(emptyMap())
         private set
 
     fun generatePairs() {
-        if (participants.size < 2) return
-
-        val shuffled = participants.shuffled()
-        val result = mutableMapOf<String, String>()
-
-        for (i in shuffled.indices) {
-            val giver = shuffled[i].name
-            val receiver = shuffled[(i + 1) % shuffled.size].name
-            result[giver] = receiver
+        val currentRoomId = roomId ?: return
+        viewModelScope.launch {
+            try {
+                val response = repository.generatePairs(currentRoomId)
+                pairs = response.associate { it.giverName to it.receiverName }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
-        pairs = result
     }
     var selectedPerson by mutableStateOf<String?>(null)
         private set
@@ -82,6 +101,29 @@ class MainViewModel : ViewModel() {
         generatePairs()
         currentScreen = "GAME"
     }
+    var roomId by mutableStateOf<Int?>(null)
+        private set
+
+    var roomCode by mutableStateOf<String?>(null)
+        private set
+    fun createRoom() {
+
+        viewModelScope.launch {
+
+            try {
+
+                val response = repository.createRoom()
+
+                roomId = response.id
+                roomCode = response.code
+                println("ROOM CREATED: ${response.id} ${response.code}")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 
 
 }

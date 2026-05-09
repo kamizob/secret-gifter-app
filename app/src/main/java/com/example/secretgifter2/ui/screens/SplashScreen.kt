@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SplashScreen(viewModel: MainViewModel) {
     LaunchedEffect(Unit) {
+        viewModel.createRoom()
         delay(2000)
         viewModel.currentScreen = "SETUP"
     }
