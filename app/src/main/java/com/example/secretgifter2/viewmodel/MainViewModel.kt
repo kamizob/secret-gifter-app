@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 import com.example.secretgifter2.data.remote.response.PairResponse
+import com.example.secretgifter2.data.remote.response.WishlistItemResponse
 
 class MainViewModel : ViewModel() {
     var currentScreen by mutableStateOf("SPLASH")
@@ -45,7 +46,10 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = repository.createParticipant(trimmed, currentRoomId)
-                participants.add(Participant(response.name))
+                participants.add(Participant(
+                    id = response.id,
+                    publicId = response.publicId,
+                    name = response.name))
                 errorMessage = null
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -55,18 +59,18 @@ class MainViewModel : ViewModel() {
     var pairs by mutableStateOf<Map<String, String>>(emptyMap())
         private set
 
-    fun generatePairs() {
-        val currentRoomId = roomId ?: return
-        viewModelScope.launch {
-            try {
-                val response = repository.generatePairs(currentRoomId)
-                pairs = response.associate { it.giverName to it.receiverName }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-    }
+//    fun generatePairs() {
+//        val currentRoomId = roomId ?: return
+//        viewModelScope.launch {
+//            try {
+//                val response = repository.generatePairs(currentRoomId)
+//                pairs = response.associate { it.giverName to it.receiverName }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//
+//    }
     var selectedPerson by mutableStateOf<String?>(null)
         private set
 
@@ -78,6 +82,8 @@ class MainViewModel : ViewModel() {
 
     fun nextPlayer() {
         currentPlayerIndex++
+        revealedReceiver = null
+        revealedWishlist = emptyList()
         if (currentPlayerIndex >= participants.size) {
             currentScreen = "RESULT"
         } else {
@@ -86,6 +92,8 @@ class MainViewModel : ViewModel() {
 
     }
     fun resetToSetup() {
+        revealedReceiver = null
+        revealedWishlist = emptyList()
         currentScreen = "SETUP"
         currentPlayerIndex = 0
         selectedPerson = null
@@ -98,9 +106,14 @@ class MainViewModel : ViewModel() {
         private set
     fun restartGame() {
         currentPlayerIndex = 0
-        generatePairs()
-        currentScreen = "GAME"
+        startGame()
     }
+//    fun restartGame() {
+//        currentPlayerIndex = 0
+//        generatePairs()
+//        currentScreen = "GAME"
+//    }
+
     var roomId by mutableStateOf<Int?>(null)
         private set
 
@@ -118,6 +131,24 @@ class MainViewModel : ViewModel() {
                 roomCode = response.code
                 println("ROOM CREATED: ${response.id} ${response.code}")
 
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    var revealedReceiver by mutableStateOf<String?>(null)
+        private set
+
+    var revealedWishlist by mutableStateOf<List<WishlistItemResponse>>(emptyList())
+        private set
+    fun revealForCurrentPlayer () {
+        val player = participants.getOrNull(currentPlayerIndex) ?: return
+        val currentRoomId = roomId ?: return
+        viewModelScope.launch {
+            try {
+                val response = repository.revealPair(player.publicId, currentRoomId)
+                revealedReceiver = response.receiver
+                revealedWishlist = response.wishlist ?: emptyList()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

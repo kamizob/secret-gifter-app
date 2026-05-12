@@ -44,8 +44,8 @@ fun GameScreen(viewModel: MainViewModel) {
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(16.dp))
-        if (showResult && player != null) {
-            val receiver = viewModel.pairs[player]
+        if (showResult) {
+            val receiver = viewModel.revealedReceiver
             if (receiver != null) {
                 Text(
                     text = "🎁 You gift for:",
@@ -57,6 +57,22 @@ fun GameScreen(viewModel: MainViewModel) {
                     style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Wishlist 🎁",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                viewModel.revealedWishlist.forEach {
+
+                    Text(
+                        text = "• ${it.itemText}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
 
         }
@@ -68,6 +84,7 @@ fun GameScreen(viewModel: MainViewModel) {
             },
             onFinished = {
                 showResult = true
+                viewModel.revealForCurrentPlayer()
             }
         )
         Spacer(modifier = Modifier.weight(1f))

@@ -5,8 +5,11 @@ import com.example.secretgifter2.data.remote.request.GeneratePairsRequest
 import com.example.secretgifter2.data.remote.response.CreateRoomResponse
 import com.example.secretgifter2.data.remote.response.PairResponse
 import com.example.secretgifter2.data.remote.response.ParticipantResponse
+import com.example.secretgifter2.data.remote.response.RevealPairResponse
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface SecretGifterApi {
     @POST("api/rooms")
@@ -21,4 +24,10 @@ interface SecretGifterApi {
     suspend fun generatePairs(
         @Body request: GeneratePairsRequest
     ): List<PairResponse>
+
+    @GET("api/pairs/reveal")
+    suspend fun revealPair(
+        @Query("publicId") publicId: String,
+        @Query("roomId") roomId: Int
+    ): RevealPairResponse
 }

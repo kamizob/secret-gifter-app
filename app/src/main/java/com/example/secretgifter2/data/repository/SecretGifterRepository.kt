@@ -15,4 +15,7 @@ class SecretGifterRepository {
 
     suspend fun generatePairs(roomId: Int) =
         api.generatePairs(GeneratePairsRequest(roomId))
+
+    suspend fun revealPair(publicId: String, roomId: Int) =
+        api.revealPair(publicId, roomId)
 }
