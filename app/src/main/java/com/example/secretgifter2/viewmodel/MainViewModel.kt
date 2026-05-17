@@ -81,6 +81,7 @@ class MainViewModel : ViewModel() {
         get() = participants.getOrNull(currentPlayerIndex)?.name
 
     fun nextPlayer() {
+        isRevealLoaded = false
         currentPlayerIndex++
         revealedReceiver = null
         revealedWishlist = emptyList()
@@ -92,15 +93,38 @@ class MainViewModel : ViewModel() {
 
     }
     fun resetToSetup() {
+        participants.clear()
+        pairs = emptyMap()
         revealedReceiver = null
         revealedWishlist = emptyList()
-        currentScreen = "SETUP"
+        isRevealLoaded = false
+        isRevealLoading = false
         currentPlayerIndex = 0
         selectedPerson = null
+        roomId = null
+        roomCode = null
+        currentScreen = "SETUP"
+        createRoom()
     }
+//    fun resetToSetup() {
+//        isRevealLoaded = false
+//        isRevealLoading = false
+//        revealedReceiver = null
+//        revealedWishlist = emptyList()
+//        currentScreen = "SETUP"
+//        currentPlayerIndex = 0
+//        selectedPerson = null
+//    }
     fun removeParticipant(participant: Participant) {
-        participants.remove(participant)
-        pairs = emptyMap()
+        viewModelScope.launch {
+            try {
+                repository.deleteParticipant(participant.id)
+                participants.remove(participant)
+                pairs = emptyMap()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
     var errorMessage by mutableStateOf<String?>(null)
         private set
@@ -138,17 +162,61 @@ class MainViewModel : ViewModel() {
     }
     var revealedReceiver by mutableStateOf<String?>(null)
         private set
+    var isRevealLoading by mutableStateOf(false)
+        private set
+
+    var isRevealLoaded by mutableStateOf(false)
+        private set
 
     var revealedWishlist by mutableStateOf<List<WishlistItemResponse>>(emptyList())
         private set
-    fun revealForCurrentPlayer () {
+    fun revealForCurrentPlayer() {
         val player = participants.getOrNull(currentPlayerIndex) ?: return
         val currentRoomId = roomId ?: return
+        isRevealLoading = true
+        isRevealLoaded = false
+        revealedReceiver = null
+        revealedWishlist = emptyList()
         viewModelScope.launch {
             try {
-                val response = repository.revealPair(player.publicId, currentRoomId)
+                val response = repository.revealPair(
+                    player.publicId,
+                    currentRoomId
+                )
                 revealedReceiver = response.receiver
                 revealedWishlist = response.wishlist ?: emptyList()
+                isRevealLoaded = true
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isRevealLoading = false
+            }
+        }
+    }
+//    fun revealForCurrentPlayer () {
+//        val player = participants.getOrNull(currentPlayerIndex) ?: return
+//        val currentRoomId = roomId ?: return
+//        viewModelScope.launch {
+//            try {
+//                val response = repository.revealPair(player.publicId, currentRoomId)
+//                revealedReceiver = response.receiver
+//                revealedWishlist = response.wishlist ?: emptyList()
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+    fun addWishlistItem (participant: Participant, itemText: String) {
+        val trimmed = itemText.trim()
+        if (trimmed.isBlank()) return
+
+        viewModelScope.launch {
+            try {
+                repository.createWishlistItem(
+                    participant.publicId,
+                    trimmed
+                    )
+                participant.wishlist.add(trimmed)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

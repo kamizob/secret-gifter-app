@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 fun GameScreen(viewModel: MainViewModel) {
     val player = viewModel.currentPlayer
     var showResult by remember { mutableStateOf(false) }
+    showResult = viewModel.isRevealLoaded
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,7 +45,7 @@ fun GameScreen(viewModel: MainViewModel) {
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(16.dp))
-        if (showResult) {
+        if (viewModel.isRevealLoaded) {
             val receiver = viewModel.revealedReceiver
             if (receiver != null) {
                 Text(
@@ -83,7 +84,7 @@ fun GameScreen(viewModel: MainViewModel) {
                 viewModel.pairs[it]
             },
             onFinished = {
-                showResult = true
+//                showResult = true
                 viewModel.revealForCurrentPlayer()
             }
         )
@@ -97,7 +98,6 @@ fun GameScreen(viewModel: MainViewModel) {
                 Text("Friends list")
             }
             Button(onClick = {
-                showResult = false
                 viewModel.nextPlayer()
             }) {
                 Text("Next person")

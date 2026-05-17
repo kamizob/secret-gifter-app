@@ -33,6 +33,16 @@ fun SetupScreen(viewModel: MainViewModel) {
             .background(MaterialTheme.colorScheme.background)
     ) {
         Text("Friends list \uD83E\uDD77\uD83D\uDCCB", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        viewModel.roomCode?.let {
+
+            Text(
+                text = "Room code: $it",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
 
         Spacer(modifier = Modifier.height(80.dp))
         ParticipantInput {
@@ -49,12 +59,19 @@ fun SetupScreen(viewModel: MainViewModel) {
         ParticipantList(
             participants = viewModel.participants,
             onDelete = {viewModel.removeParticipant(it)},
+            onAddWishlistItem = { participant, text ->
+                viewModel.addWishlistItem(
+                    participant,
+                    text
+                )
+            },
             modifier = Modifier.weight(1f)
         )
         Text("Participants: ${viewModel.participants.size}")
         Button(
-            onClick = { viewModel.startGame()},
+            onClick = { viewModel.startGame() },
             enabled = viewModel.participants.size >= 2
+                    && !viewModel.isRevealLoading
         ) {
             Text("Let's start")
         }

@@ -1,8 +1,11 @@
 package com.example.secretgifter2.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
@@ -23,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 fun ParticipantList(
     participants: List<Participant>,
     onDelete: (Participant) -> Unit,
+    onAddWishlistItem: (Participant, String) -> Unit,
     modifier: Modifier
 ) {
     LazyColumn (modifier = modifier){
@@ -38,17 +42,61 @@ fun ParticipantList(
 
 
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(12.dp)
                 ) {
-                    Text(text = participant.name, color = MaterialTheme.colorScheme.onBackground)
-                    IconButton(onClick = { onDelete(participant) }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.onBackground)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text(
+                            text = participant.name,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+
+                        IconButton(
+                            onClick = { onDelete(participant) }
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    participant.wishlist.forEach {
+
+                        Text(
+                            text = "• $it",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    WishlistInput { text ->
+
+                        onAddWishlistItem(participant, text)
                     }
                 }
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(12.dp),
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    Text(text = participant.name, color = MaterialTheme.colorScheme.onBackground)
+//                    IconButton(onClick = { onDelete(participant) }) {
+//                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.onBackground)
+//                    }
+//                }
             }
         }
     }
