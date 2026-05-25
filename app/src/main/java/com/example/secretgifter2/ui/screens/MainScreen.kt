@@ -36,7 +36,9 @@ fun MainScreen(viewModel: MainViewModel) {
             }
 
             when (viewModel.currentScreen) {
+                "HOME" -> HomeScreen(viewModel)
                 "SPLASH" -> SplashScreen(viewModel)
+                "JOIN" -> JoinScreen(viewModel)
                 "SETUP" -> SetupScreen(viewModel)
                 "GAME" -> GameScreen(viewModel)
                 "RESULT" -> ResultScreen(viewModel)

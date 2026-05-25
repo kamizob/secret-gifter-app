@@ -26,4 +26,7 @@ class SecretGifterRepository {
         )
     suspend fun deleteParticipant(id: Int) =
         api.deleteParticipant(id)
+
+    suspend fun joinRoom(code: String) =
+        api.joinRoom(code)
 }

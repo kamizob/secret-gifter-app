@@ -14,7 +14,7 @@ import com.example.secretgifter2.data.remote.response.PairResponse
 import com.example.secretgifter2.data.remote.response.WishlistItemResponse
 
 class MainViewModel : ViewModel() {
-    var currentScreen by mutableStateOf("SPLASH")
+    var currentScreen by mutableStateOf("HOME")
     private val repository = SecretGifterRepository()
 
 
@@ -153,6 +153,7 @@ class MainViewModel : ViewModel() {
 
                 roomId = response.id
                 roomCode = response.code
+                currentScreen = "SETUP"
                 println("ROOM CREATED: ${response.id} ${response.code}")
 
             } catch (e: Exception) {
@@ -219,6 +220,19 @@ class MainViewModel : ViewModel() {
                 participant.wishlist.add(trimmed)
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+        }
+    }
+    fun joinRoom(code: String) {
+        viewModelScope.launch {
+            try {
+                val response = repository.joinRoom(code)
+                roomId = response.roomId
+                roomCode = code
+                currentScreen = "SETUP"
+            } catch (e: Exception) {
+                e.printStackTrace()
+                errorMessage = "Room not found"
             }
         }
     }

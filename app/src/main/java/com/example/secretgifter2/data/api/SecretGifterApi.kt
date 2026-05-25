@@ -4,6 +4,7 @@ import com.example.secretgifter2.data.remote.request.CreateParticipantRequest
 import com.example.secretgifter2.data.remote.request.CreateWishlistItemRequest
 import com.example.secretgifter2.data.remote.request.GeneratePairsRequest
 import com.example.secretgifter2.data.remote.response.CreateRoomResponse
+import com.example.secretgifter2.data.remote.response.JoinRoomResponse
 import com.example.secretgifter2.data.remote.response.PairResponse
 import com.example.secretgifter2.data.remote.response.ParticipantResponse
 import com.example.secretgifter2.data.remote.response.RevealPairResponse
@@ -44,4 +45,9 @@ interface SecretGifterApi {
     suspend fun deleteParticipant(
         @Path("id") id: Int
     )
+
+    @POST("api/rooms/join")
+    suspend fun joinRoom(
+        @Query("code") code: String
+    ): JoinRoomResponse
 }
