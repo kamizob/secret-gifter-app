@@ -29,4 +29,16 @@ class SecretGifterRepository {
 
     suspend fun joinRoom(code: String) =
         api.joinRoom(code)
+
+    suspend fun getParticipants(roomId: Int) =
+        api.getParticipants(roomId)
+
+    suspend fun getPairs(roomId: Int) =
+        api.getPairs(roomId)
+
+    suspend fun startRoom(roomId: Int) =
+        api.startRoom(roomId)
+
+    suspend fun getRoomStatus(roomId: Int) =
+        api.getRoomStatus(roomId)
 }

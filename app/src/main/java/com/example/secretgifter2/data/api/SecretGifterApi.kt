@@ -50,4 +50,24 @@ interface SecretGifterApi {
     suspend fun joinRoom(
         @Query("code") code: String
     ): JoinRoomResponse
+
+    @GET("api/participants")
+    suspend fun getParticipants(
+        @Query("roomId") roomId: Int
+    ): List<ParticipantResponse>
+
+    @GET("api/pairs/{roomId}")
+    suspend fun getPairs(
+        @Path("roomId") roomId: Int
+    ): List<PairResponse>
+
+    @POST("api/rooms/{roomId}/start")
+    suspend fun startRoom(
+        @Path("roomId") roomId: Int
+    )
+
+    @GET("api/rooms/{roomId}/status")
+    suspend fun getRoomStatus(
+        @Path("roomId") roomId: Int
+    ): String
 }

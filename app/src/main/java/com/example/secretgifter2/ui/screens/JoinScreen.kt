@@ -23,6 +23,9 @@ fun JoinScreen(
     viewModel: MainViewModel
 ) {
     var code by remember { mutableStateOf("") }
+    var name by remember {
+        mutableStateOf("")
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,11 +49,24 @@ fun JoinScreen(
             }
         )
 
+        TextField(
+            value = name,
+
+            onValueChange = {
+                name = it
+            },
+
+            label = {
+                Text("Your name")
+            }
+        )
+
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-                viewModel.joinRoom(code)
+                viewModel.joinRoom(code, name)
             },
             enabled = code.isNotBlank()
         ) {

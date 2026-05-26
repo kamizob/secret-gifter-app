@@ -1,5 +1,6 @@
 package com.example.secretgifter2.ui.screens
 
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.secretgifter2.viewmodel.MainViewModel
 
 @Composable
-fun HomeScreen(
+fun SeparateDevicesMenuScreen(
     viewModel: MainViewModel
 ) {
 
@@ -30,19 +31,21 @@ fun HomeScreen(
     ) {
 
         Text(
-            text = "🎁 Secret Gifter",
-            style = MaterialTheme.typography.headlineLarge
+            text = "📱 Separate devices",
+            style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Button(
             onClick = {
-                viewModel.setPassPhoneMode()
+
+                viewModel.setSeparateDevicesMode()
+
                 viewModel.createRoom()
             }
         ) {
-            Text("🎡 Pass the phone")
+            Text("Create room")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -52,19 +55,10 @@ fun HomeScreen(
 
                 viewModel.setSeparateDevicesMode()
 
-                viewModel.currentScreen = "SEPARATE_MENU"
+                viewModel.currentScreen = "JOIN"
             }
         ) {
-            Text("📱 Separate devices")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                viewModel.currentScreen = "HISTORY"
-            }
-        ) {
-            Text("History")
+            Text("Join room")
         }
     }
 }

@@ -42,6 +42,10 @@ fun MainScreen(viewModel: MainViewModel) {
                 "SETUP" -> SetupScreen(viewModel)
                 "GAME" -> GameScreen(viewModel)
                 "RESULT" -> ResultScreen(viewModel)
+                "HISTORY" -> HistoryScreen(viewModel)
+                "SEPARATE_MENU" -> SeparateDevicesMenuScreen(viewModel)
+                "WAITING_ROOM" -> WaitingRoomScreen(viewModel)
+                "SELF_REVEAL" -> SelfRevealScreen(viewModel)
             }
         }
 
