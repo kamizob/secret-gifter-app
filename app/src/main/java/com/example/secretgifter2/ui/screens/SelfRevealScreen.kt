@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -20,6 +21,9 @@ import com.example.secretgifter2.viewmodel.MainViewModel
 fun SelfRevealScreen(
     viewModel: MainViewModel
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.revealMyself()
+    }
 
     Column(
         modifier = Modifier
@@ -37,7 +41,7 @@ fun SelfRevealScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        if (viewModel.isRevealLoaded) {
+        if (viewModel.isRevealLoaded && viewModel.spinFinished) {
 
             Text(
                 text = "You gift for:",
@@ -74,11 +78,9 @@ fun SelfRevealScreen(
 
         Wheel(
             names = viewModel.participants.map { it.name },
-
-            targetName = viewModel.revealedReceiver,
-
+            targetName = if (viewModel.isRevealLoaded) viewModel.revealedReceiver else null,
             onFinished = {
-                viewModel.revealMyself()
+                viewModel.spinFinished = true
             }
         )
     }

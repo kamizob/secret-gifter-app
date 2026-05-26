@@ -18,12 +18,10 @@ fun WaitingRoomScreen(
     viewModel: MainViewModel
 ) {
     LaunchedEffect(Unit) {
-
         viewModel.pollRoomStatus()
     }
 
     LaunchedEffect(Unit) {
-
         viewModel.pollParticipants()
     }
 
@@ -60,13 +58,16 @@ fun WaitingRoomScreen(
             }
         }
 
-        Button(
-            onClick = {
-                viewModel.startSeparateDeviceGame()
-            },
-            enabled = viewModel.participants.size >= 2
-        ) {
-            Text("Start game")
+        if (viewModel.isHost) {
+
+            Button(
+                onClick = {
+                    viewModel.startSeparateDeviceGame()
+                },
+                enabled = viewModel.participants.size >= 2
+            ) {
+                Text("Start game")
+            }
         }
     }
 }

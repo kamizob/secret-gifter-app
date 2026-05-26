@@ -170,11 +170,12 @@ class MainViewModel(
                 )
                 currentScreen =
                     if (gameMode == "SEPARATE_DEVICES") {
-                        "WAITING_ROOM"
+                        "HOST_SETUP"
                     } else {
                         "SETUP"
                     }
                 println("ROOM CREATED: ${response.id} ${response.code}")
+                isHost = true
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -277,6 +278,7 @@ class MainViewModel(
                 loadParticipants()
 
                 currentScreen = "WAITING_ROOM"
+                isHost = false
 
             } catch (e: Exception) {
 
@@ -365,8 +367,15 @@ class MainViewModel(
         viewModelScope.launch {
 
             try {
+                repository.generatePairs(currentRoomId)
 
                 repository.startRoom(currentRoomId)
+
+                loadParticipants()
+
+                loadPairs()
+
+                currentScreen = "SELF_REVEAL"
 
             } catch (e: Exception) {
 
@@ -381,6 +390,7 @@ class MainViewModel(
 
         val publicId = myParticipantPublicId ?: return
         val currentRoomId = roomId ?: return
+        spinFinished = false
 
         isRevealLoading = true
         isRevealLoaded = false
@@ -399,7 +409,7 @@ class MainViewModel(
                     )
 
                 revealedReceiver = response.receiver
-                revealedWishlist = response.wishlist
+                revealedWishlist = response.wishlist ?: emptyList()
 
                 isRevealLoaded = true
 
@@ -413,78 +423,233 @@ class MainViewModel(
             }
         }
     }
-    fun pollRoomStatus() {
+//    fun pollRoomStatus() {
+//
+//        val currentRoomId = roomId ?: return
+//
+//        viewModelScope.launch {
+//
+//            while (currentScreen == "WAITING_ROOM") {
+//
+//                try {
+//
+//                    val status =
+//                        repository.getRoomStatus(
+//                            currentRoomId
+//                        )
+//
+//                    if (status == "STARTED") {
+//
+//                        loadParticipants()
+//
+//                        loadPairs()
+//
+//                        currentScreen = "SELF_REVEAL"
+//
+//                        break
+//                    }
+//
+//                } catch (e: Exception) {
+//
+//                    e.printStackTrace()
+//                }
+//
+//                kotlinx.coroutines.delay(2000)
+//            }
+//        }
+//    }
+//fun pollRoomStatus() {
+//
+//    val currentRoomId = roomId ?: return
+//
+//    viewModelScope.launch {
+//
+//        while (true) {
+//
+//            try {
+//
+//                println("POLLING ROOM STATUS")
+//
+//                val status =
+//                    repository.getRoomStatus(currentRoomId)
+//
+//                println("STATUS = $status")
+//
+//                if (status == "STARTED") {
+//
+//                    loadParticipants()
+//
+//                    loadPairs()
+//
+//                    currentScreen = "SELF_REVEAL"
+//
+//                    break
+//                }
+//
+//            } catch (e: Exception) {
+//
+//                e.printStackTrace()
+//            }
+//
+//            kotlinx.coroutines.delay(2000)
+//        }
+//    }
+//}
+//    fun pollParticipants() {
+//
+//        val currentRoomId = roomId ?: return
+//
+//        viewModelScope.launch {
+//
+//            while (currentScreen == "WAITING_ROOM") {
+//
+//                try {
+//
+//                    val response =
+//                        repository.getParticipants(
+//                            currentRoomId
+//                        )
+//
+//                    participants.clear()
+//
+//                    participants.addAll(
+//                        response.map {
+//
+//                            Participant(
+//                                id = it.id,
+//                                publicId = it.publicId,
+//                                name = it.name
+//                            )
+//                        }
+//                    )
+//
+//                } catch (e: Exception) {
+//
+//                    e.printStackTrace()
+//                }
+//
+//                kotlinx.coroutines.delay(2000)
+//            }
+//        }
+//    }
+//fun pollParticipants() {
+//
+//    val currentRoomId = roomId ?: return
+//
+//    viewModelScope.launch {
+//
+//        while (true) {
+//
+//            try {
+//
+//                val response =
+//                    repository.getParticipants(currentRoomId)
+//
+//                participants.clear()
+//
+//                participants.addAll(
+//                    response.map {
+//
+//                        Participant(
+//                            id = it.id,
+//                            publicId = it.publicId,
+//                            name = it.name
+//                        )
+//                    }
+//                )
+//
+//            } catch (e: Exception) {
+//
+//                e.printStackTrace()
+//            }
+//
+//            kotlinx.coroutines.delay(2000)
+//        }
+//    }
+//}
+fun pollRoomStatus() {
+    viewModelScope.launch {
+        // Palaukti kol roomId bus nustatytas
+        while (roomId == null) {
+            kotlinx.coroutines.delay(200)
+        }
+        val currentRoomId = roomId ?: return@launch
 
-        val currentRoomId = roomId ?: return
+        while (true) {
+            try {
+                val status = repository.getRoomStatus(currentRoomId)
+                if (status == "STARTED") {
+                    loadParticipants()
+                    loadPairs()
+                    currentScreen = "SELF_REVEAL"
+                    break
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            kotlinx.coroutines.delay(2000)
+        }
+    }
+}
 
+    fun pollParticipants() {
         viewModelScope.launch {
+            while (roomId == null) {
+                kotlinx.coroutines.delay(200)
+            }
+            val currentRoomId = roomId ?: return@launch
 
             while (currentScreen == "WAITING_ROOM") {
-
                 try {
-
-                    val status =
-                        repository.getRoomStatus(
-                            currentRoomId
-                        )
-
-                    if (status == "STARTED") {
-
-                        loadParticipants()
-
-                        loadPairs()
-
-                        currentScreen = "SELF_REVEAL"
-
-                        break
-                    }
-
+                    val response = repository.getParticipants(currentRoomId)
+                    participants.clear()
+                    participants.addAll(response.map {
+                        Participant(id = it.id, publicId = it.publicId, name = it.name)
+                    })
                 } catch (e: Exception) {
-
                     e.printStackTrace()
                 }
-
                 kotlinx.coroutines.delay(2000)
             }
         }
     }
-    fun pollParticipants() {
+    fun createHostParticipant(name: String) {
+
+        val trimmed = name.trim()
+
+        if (trimmed.isBlank()) {
+            errorMessage = "Enter your name"
+            return
+        }
 
         val currentRoomId = roomId ?: return
 
         viewModelScope.launch {
 
-            while (currentScreen == "WAITING_ROOM") {
+            try {
 
-                try {
-
-                    val response =
-                        repository.getParticipants(
-                            currentRoomId
-                        )
-
-                    participants.clear()
-
-                    participants.addAll(
-                        response.map {
-
-                            Participant(
-                                id = it.id,
-                                publicId = it.publicId,
-                                name = it.name
-                            )
-                        }
+                val participant =
+                    repository.createParticipant(
+                        trimmed,
+                        currentRoomId
                     )
 
-                } catch (e: Exception) {
+                myParticipantPublicId =
+                    participant.publicId
 
-                    e.printStackTrace()
-                }
+                loadParticipants()
 
-                kotlinx.coroutines.delay(2000)
+                currentScreen = "WAITING_ROOM"
+
+            } catch (e: Exception) {
+
+                e.printStackTrace()
             }
         }
     }
+    var isHost by mutableStateOf(false)
+        private set
+    var spinFinished by mutableStateOf(false)
 
 
 
