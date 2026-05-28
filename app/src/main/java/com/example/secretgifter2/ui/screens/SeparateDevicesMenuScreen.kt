@@ -60,5 +60,13 @@ fun SeparateDevicesMenuScreen(
         ) {
             Text("Join room")
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                viewModel.currentScreen = "HOME"
+            }
+        ) {
+            Text("Home")
+        }
     }
 }

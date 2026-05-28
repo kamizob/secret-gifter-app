@@ -29,6 +29,9 @@ fun HistoryScreen(
 ) {
 
     val rooms = viewModel.getSavedRooms()
+    Spacer(modifier = Modifier.height(16.dp))
+
+
 
 
     Column(
@@ -39,6 +42,7 @@ fun HistoryScreen(
             text = "Past games 🎁",
             style = MaterialTheme.typography.headlineMedium
         )
+
 
         LazyColumn {
 
@@ -86,18 +90,17 @@ fun HistoryScreen(
                         ) {
                             Text("View results")
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
 
-                        Button(
-                            onClick = {
-                                viewModel.currentScreen = "HOME"
-                            }
-                        ) {
-                            Text("Home")
-                        }
                     }
                 }
             }
+        }
+        Button(
+            onClick = {
+                viewModel.currentScreen = "HOME"
+            }
+        ) {
+            Text("Home")
         }
     }
 }

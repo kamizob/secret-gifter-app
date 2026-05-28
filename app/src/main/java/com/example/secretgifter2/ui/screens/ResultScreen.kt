@@ -20,8 +20,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import com.example.secretgifter2.data.remote.response.PairResponse
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+
 @Composable
 fun ResultScreen(viewModel: MainViewModel) {
+    var selectedPair by remember {
+        mutableStateOf<PairResponse?>(null)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,7 +44,7 @@ fun ResultScreen(viewModel: MainViewModel) {
         LazyColumn(
             modifier = Modifier.weight(1f)
         ) {
-            items(viewModel.pairs.toList()) { (giver, receiver) ->
+            items(viewModel.pairDetails) { pair  ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -49,10 +60,29 @@ fun ResultScreen(viewModel: MainViewModel) {
                             .padding(16.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = "$giver \uD83C\uDF81➡\uFE0F $receiver",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+//                        Text(
+//                            text = "$giver \uD83C\uDF81➡\uFE0F $receiver",
+//                            style = MaterialTheme.typography.bodyLarge
+//                        )
+                        Column {
+
+                            Text(
+                                text = "${pair.giverName} 🎁➡️ ${pair.receiverName}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+
+                            Spacer(
+                                modifier = Modifier.height(8.dp)
+                            )
+
+                            Button(
+                                onClick = {
+                                    selectedPair = pair
+                                }
+                            ) {
+                                Text("Gift ideas")
+                            }
+                        }
 
                     }
                 }
@@ -83,6 +113,63 @@ fun ResultScreen(viewModel: MainViewModel) {
             Text("Home")
         }
 
+    }
+    selectedPair?.let { pair ->
+
+        AlertDialog(
+
+            containerColor =
+                MaterialTheme.colorScheme.surface,
+
+            titleContentColor =
+                MaterialTheme.colorScheme.onSurface,
+
+            textContentColor =
+                MaterialTheme.colorScheme.onSurface,
+
+            onDismissRequest = {
+                selectedPair = null
+            },
+
+            title = {
+                Text(
+                    text = "Gift ideas for ${pair.receiverName}"
+                )
+            },
+
+            text = {
+
+                Column {
+
+                    if (pair.wishList.isEmpty()) {
+
+                        Text(
+                            text = "No gift ideas added"
+                        )
+
+                    } else {
+
+                        pair.wishList.forEach {
+
+                            Text(
+                                text = "• ${it.itemText}"
+                            )
+                        }
+                    }
+                }
+            },
+
+            confirmButton = {
+
+                Button(
+                    onClick = {
+                        selectedPair = null
+                    }
+                ) {
+                    Text("Close")
+                }
+            }
+        )
     }
 
 }
