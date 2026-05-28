@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -83,5 +84,11 @@ fun SelfRevealScreen(
                 viewModel.spinFinished = true
             }
         )
+        if (viewModel.spinFinished && viewModel.isRevealLoaded) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(onClick = { viewModel.currentScreen = "GIFT_REVEAL" }) {
+                Text("See your person 🎁")
+            }
+        }
     }
 }

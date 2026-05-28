@@ -47,6 +47,7 @@ fun MainScreen(viewModel: MainViewModel) {
                 "WAITING_ROOM" -> WaitingRoomScreen(viewModel)
                 "SELF_REVEAL" -> SelfRevealScreen(viewModel)
                 "HOST_SETUP" -> HostSetupScreen(viewModel)
+                "GIFT_REVEAL" -> GiftRevealScreen(viewModel)
             }
         }
 

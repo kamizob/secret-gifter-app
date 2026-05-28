@@ -3,7 +3,6 @@ package com.example.secretgifter2.viewmodel
 import android.app.Application
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import com.example.secretgifter2.data.model.Participant
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -14,7 +13,6 @@ import com.example.secretgifter2.data.local.RoomHistoryManager
 import com.example.secretgifter2.data.model.SavedRoom
 import kotlinx.coroutines.launch
 
-import com.example.secretgifter2.data.remote.response.PairResponse
 import com.example.secretgifter2.data.remote.response.WishlistItemResponse
 
 class MainViewModel(
@@ -206,7 +204,7 @@ class MainViewModel(
                     currentRoomId
                 )
                 revealedReceiver = response.receiver
-                revealedWishlist = response.wishlist ?: emptyList()
+                revealedWishlist = response.wishList ?: emptyList()
                 isRevealLoaded = true
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -246,7 +244,8 @@ class MainViewModel(
     }
     fun joinRoom(
         code: String,
-        name: String
+        name: String,
+        wishlistItems: List<String> = emptyList()
     ) {
 
         val trimmed = name.trim()
@@ -274,6 +273,11 @@ class MainViewModel(
 
                 myParticipantPublicId =
                     participant.publicId
+                myName = trimmed
+
+                wishlistItems.forEach { itemText ->
+                    repository.createWishlistItem(participant.publicId.toString(), itemText)
+                }
 
                 loadParticipants()
 
@@ -407,9 +411,10 @@ class MainViewModel(
                         publicId,
                         currentRoomId
                     )
+                println(response)
 
                 revealedReceiver = response.receiver
-                revealedWishlist = response.wishlist ?: emptyList()
+                revealedWishlist = response.wishList ?: emptyList()
 
                 isRevealLoaded = true
 
@@ -613,7 +618,7 @@ fun pollRoomStatus() {
             }
         }
     }
-    fun createHostParticipant(name: String) {
+    fun createHostParticipant(name: String, wishlistItems: List<String> = emptyList()) {
 
         val trimmed = name.trim()
 
@@ -636,6 +641,10 @@ fun pollRoomStatus() {
 
                 myParticipantPublicId =
                     participant.publicId
+                myName = trimmed
+                wishlistItems.forEach { itemText ->
+                    repository.createWishlistItem(participant.publicId.toString(), itemText)
+                }
 
                 loadParticipants()
 
@@ -650,6 +659,9 @@ fun pollRoomStatus() {
     var isHost by mutableStateOf(false)
         private set
     var spinFinished by mutableStateOf(false)
+
+    var myName by mutableStateOf<String?>(null)
+        private set
 
 
 
