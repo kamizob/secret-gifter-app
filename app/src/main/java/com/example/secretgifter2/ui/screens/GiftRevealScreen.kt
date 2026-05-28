@@ -112,22 +112,5 @@ fun GiftRevealScreen(viewModel: MainViewModel) {
             }
         }
 
-//        if (viewModel.revealedWishlist.isNotEmpty()) {
-//            Text("Their wishlist:", style = MaterialTheme.typography.titleMedium)
-//            Spacer(modifier = Modifier.height(12.dp))
-//            viewModel.revealedWishlist.forEach {
-//                Text(
-//                    text = "• ${it.itemText}",
-//                    style = MaterialTheme.typography.bodyLarge,
-//                    modifier = Modifier.padding(vertical = 4.dp)
-//                )
-//            }
-//        } else {
-//            Text(
-//                text = "No wishlist items yet.",
-//                style = MaterialTheme.typography.bodyMedium,
-//                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-//            )
-//        }
     }
 }

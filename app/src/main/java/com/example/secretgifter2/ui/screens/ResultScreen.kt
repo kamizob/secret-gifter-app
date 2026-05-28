@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import com.example.secretgifter2.data.remote.response.PairResponse
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.*
 import androidx.compose.material3.AlertDialog
 
 @Composable
