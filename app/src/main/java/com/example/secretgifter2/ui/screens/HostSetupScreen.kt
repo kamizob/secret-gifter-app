@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.secretgifter2.ui.components.AppTextField
 import com.example.secretgifter2.viewmodel.MainViewModel
 
 @Composable
@@ -38,14 +39,12 @@ fun HostSetupScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        TextField(
+        AppTextField(
             value = name,
             onValueChange = {
                 name = it
             },
-            label = {
-                Text("Your name")
-            }
+            label = "Your name"
         )
 
         Spacer(modifier = Modifier.height(24.dp))

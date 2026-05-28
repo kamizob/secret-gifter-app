@@ -12,7 +12,6 @@ object RetrofitClient {
             .baseUrl(BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create()) // ← PIRMAS
             .addConverterFactory(GsonConverterFactory.create())    // ← ANTRAS
-            .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(SecretGifterApi::class.java)
     }

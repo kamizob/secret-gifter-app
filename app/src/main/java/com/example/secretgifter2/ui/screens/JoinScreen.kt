@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.secretgifter2.viewmodel.MainViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.secretgifter2.ui.components.AppTextField
 
 @Composable
 fun JoinScreen(
@@ -39,26 +40,20 @@ fun JoinScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        TextField(
+        AppTextField(
             value = code,
             onValueChange = {
-                code = it.uppercase()
+                code = it.uppercase().take(6)
             },
-            label = {
-                Text("Room code")
-            }
+            label = "Room code"
         )
 
-        TextField(
+        AppTextField(
             value = name,
-
             onValueChange = {
                 name = it
             },
-
-            label = {
-                Text("Your name")
-            }
+            label = "Your name"
         )
 
 
