@@ -75,5 +75,14 @@ fun SetupScreen(viewModel: MainViewModel) {
         ) {
             Text("Let's start")
         }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = {
+                viewModel.goHome()
+            }
+        ) {
+            Text("Home")
+        }
     }
 }

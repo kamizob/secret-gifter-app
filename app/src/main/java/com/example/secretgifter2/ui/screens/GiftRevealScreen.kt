@@ -58,11 +58,17 @@ fun GiftRevealScreen(viewModel: MainViewModel) {
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
 
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+
+                        elevation = CardDefaults.cardElevation(6.dp)
                     ) {
 
                         Text(
                             text = "• ${it.itemText}",
                             style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.padding(16.dp)
                         )
                     }
@@ -76,6 +82,33 @@ fun GiftRevealScreen(viewModel: MainViewModel) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
+            }
+        }
+        if (viewModel.isHost) {
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    viewModel.finishOnePhoneGame {
+                        viewModel.loadPairs()
+                        viewModel.currentScreen = "RESULT"
+                    }
+                }
+            ) {
+                Text("Finish game")
+            }
+        }
+        else {
+            Button(
+                onClick = {
+
+                    viewModel.saveCurrentRoomLocally()
+
+                    viewModel.goHome()
+                }
+            ) {
+                Text("Home")
             }
         }
 

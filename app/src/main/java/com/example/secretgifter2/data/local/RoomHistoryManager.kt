@@ -35,6 +35,7 @@ class RoomHistoryManager(
 
             obj.put("roomId", it.roomId)
             obj.put("roomCode", it.roomCode)
+            obj.put("finishedAt", it.finishedAt)
 
             jsonArray.put(obj)
         }
@@ -64,7 +65,8 @@ class RoomHistoryManager(
             result.add(
                 SavedRoom(
                     roomId = obj.getInt("roomId"),
-                    roomCode = obj.getString("roomCode")
+                    roomCode = obj.getString("roomCode"),
+                    finishedAt = obj.getLong("finishedAt")
                 )
             )
         }

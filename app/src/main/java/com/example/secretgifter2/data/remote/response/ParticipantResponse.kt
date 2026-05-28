@@ -4,5 +4,6 @@ data class ParticipantResponse(
     val id: Int,
     val publicId: String,
     val name: String,
-    val roomId: Int
+    val roomId: Int,
+    val wishList: List<WishlistItemResponse>
 )

@@ -70,4 +70,9 @@ interface SecretGifterApi {
     suspend fun getRoomStatus(
         @Path("roomId") roomId: Int
     ): String
+
+    @POST("api/rooms/{roomId}/finish")
+    suspend fun finishRoom(
+        @Path("roomId") roomId: Int
+    )
 }

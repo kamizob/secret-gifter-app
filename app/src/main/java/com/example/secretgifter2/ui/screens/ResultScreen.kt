@@ -75,6 +75,13 @@ fun ResultScreen(viewModel: MainViewModel) {
             }
 
         }
+        Button(
+            onClick = {
+                viewModel.goHome()
+            }
+        ) {
+            Text("Home")
+        }
 
     }
 

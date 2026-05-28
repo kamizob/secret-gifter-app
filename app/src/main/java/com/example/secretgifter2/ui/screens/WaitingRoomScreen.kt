@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +43,14 @@ fun WaitingRoomScreen(
         Text(
             text = "Room code: ${viewModel.roomCode}"
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text =
+                if (viewModel.participants.size == 1)
+                    "1 participant joined"
+                else
+                    "${viewModel.participants.size} participants joined"
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -49,12 +59,21 @@ fun WaitingRoomScreen(
         ) {
 
             items(viewModel.participants) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
 
-                Text(
-                    text = "• ${it.name}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                    )
+                ){
+                    Text(
+                        text = "• ${it.name}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                }
+
+
             }
         }
 
@@ -68,6 +87,14 @@ fun WaitingRoomScreen(
             ) {
                 Text("Start game")
             }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                viewModel.goHome()
+            }
+        ) {
+            Text("Leave room")
         }
     }
 }

@@ -36,6 +36,38 @@ class MainViewModel(
     }
     var participants = mutableStateListOf<Participant>()
         private set
+//    fun addParticipant(name: String) {
+//        val trimmed = name.trim()
+//        if (trimmed.isBlank()) return
+//        val exists = participants.any {
+//            it.name.equals(trimmed, ignoreCase = true)
+//        }
+//        if (exists) {
+//            errorMessage = "A participant with this name already exists"
+//            return
+//        }
+//        val currentRoomId = roomId ?: return
+//        viewModelScope.launch {
+//            try {
+//                val response = repository.createParticipant(trimmed, currentRoomId)
+//                myParticipantPublicId = response.publicId
+//                if (gameMode == "SEPARATE_DEVICES") {
+//                    loadParticipants()
+//                } else {
+//                    participants.add(
+//                        Participant(
+//                            id = response.id,
+//                            publicId = response.publicId,
+//                            name = response.name
+//                        )
+//                    )
+//                }
+//                errorMessage = null
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
     fun addParticipant(name: String) {
         val trimmed = name.trim()
         if (trimmed.isBlank()) return
@@ -43,25 +75,39 @@ class MainViewModel(
             it.name.equals(trimmed, ignoreCase = true)
         }
         if (exists) {
-            errorMessage = "A participant with this name already exists"
+
+            errorMessage =
+                "A participant with this name already exists"
+
             return
         }
+
         val currentRoomId = roomId ?: return
+
         viewModelScope.launch {
+
             try {
-                val response = repository.createParticipant(trimmed, currentRoomId)
-                myParticipantPublicId = response.publicId
-//                participants.add(Participant(
-//                    id = response.id,
-//                    publicId = response.publicId,
-//                    name = response.name))
+
+                val response =
+                    repository.createParticipant(
+                        trimmed,
+                        currentRoomId
+                    )
+
+                myParticipantPublicId =
+                    response.publicId
+
                 loadParticipants()
+
                 errorMessage = null
+
             } catch (e: Exception) {
+
                 e.printStackTrace()
             }
         }
     }
+
     var pairs by mutableStateOf<Map<String, String>>(emptyMap())
         private set
 
@@ -92,6 +138,7 @@ class MainViewModel(
         revealedReceiver = null
         revealedWishlist = emptyList()
         if (currentPlayerIndex >= participants.size) {
+            finishGame()
             currentScreen = "RESULT"
         } else {
             selectedPerson = currentPlayer
@@ -121,18 +168,42 @@ class MainViewModel(
 //        currentPlayerIndex = 0
 //        selectedPerson = null
 //    }
-    fun removeParticipant(participant: Participant) {
-        viewModelScope.launch {
-            try {
-                repository.deleteParticipant(participant.id)
-//                participants.remove(participant)
-                loadParticipants()
-                pairs = emptyMap()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+//    fun removeParticipant(participant: Participant) {
+//        viewModelScope.launch {
+//            try {
+//                repository.deleteParticipant(participant.id)
+//                if (gameMode == "SEPARATE_DEVICES") {
+//                    loadParticipants()
+//                } else {
+//                    participants.remove(participant)
+//                }
+//
+////                participants.remove(participant)
+////                loadParticipants()
+//                pairs = emptyMap()
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+fun removeParticipant(participant: Participant) {
+    viewModelScope.launch {
+        try {
+
+            repository.deleteParticipant(
+                participant.id
+            )
+
+            loadParticipants()
+
+            pairs = emptyMap()
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
         }
     }
+}
     var errorMessage by mutableStateOf<String?>(null)
         private set
     fun restartGame() {
@@ -160,12 +231,6 @@ class MainViewModel(
 
                 roomId = response.id
                 roomCode = response.code
-                roomHistoryManager.saveRoom(
-                    SavedRoom(
-                        response.id,
-                        response.code
-                    )
-                )
                 currentScreen =
                     if (gameMode == "SEPARATE_DEVICES") {
                         "HOST_SETUP"
@@ -293,27 +358,57 @@ class MainViewModel(
         }
     }
 
-    fun loadParticipants() {
-        val currentRoomId = roomId ?: return
-        viewModelScope.launch {
-            try {
-                val response = repository.getParticipants(currentRoomId)
-                participants.clear()
-                participants.addAll(
-                    response.map {
-                        Participant(
-                            id = it.id,
-                            publicId = it.publicId,
-                            name = it.name
-                        )
-                    }
-                )
+//    fun loadParticipants() {
+//        val currentRoomId = roomId ?: return
+//        viewModelScope.launch {
+//            try {
+//                val response = repository.getParticipants(currentRoomId)
+//                participants.clear()
+//                participants.addAll(
+//                    response.map {
+//                        Participant(
+//                            id = it.id,
+//                            publicId = it.publicId,
+//                            name = it.name
+//                        )
+//                    }
+//                )
+//
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+fun loadParticipants() {
+    val currentRoomId = roomId ?: return
+    viewModelScope.launch {
+        try {
+            val response =
+                repository.getParticipants(currentRoomId)
+            participants.clear()
+            participants.addAll(
+                response.map {
+                    Participant(
+                        id = it.id,
+                        publicId = it.publicId,
+                        name = it.name,
+                        wishlist = mutableStateListOf<String>().apply {
+                            addAll(
+                                it.wishList.map { item ->
+                                    item.itemText
+                                }
+                            )
+                        }
+                    )
+                }
+            )
 
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        } catch (e: Exception) {
+
+            e.printStackTrace()
         }
     }
+}
     private val roomHistoryManager =
         RoomHistoryManager(getApplication())
 
@@ -574,13 +669,12 @@ class MainViewModel(
 //}
 fun pollRoomStatus() {
     viewModelScope.launch {
-        // Palaukti kol roomId bus nustatytas
         while (roomId == null) {
             kotlinx.coroutines.delay(200)
         }
         val currentRoomId = roomId ?: return@launch
 
-        while (true) {
+        while (currentScreen == "WAITING_ROOM") {
             try {
                 val status = repository.getRoomStatus(currentRoomId)
                 if (status == "STARTED") {
@@ -608,9 +702,25 @@ fun pollRoomStatus() {
                 try {
                     val response = repository.getParticipants(currentRoomId)
                     participants.clear()
-                    participants.addAll(response.map {
-                        Participant(id = it.id, publicId = it.publicId, name = it.name)
-                    })
+//                    participants.addAll(response.map {
+//                        Participant(id = it.id, publicId = it.publicId, name = it.name)
+//                    })
+                    participants.addAll(
+                        response.map {
+                            Participant(
+                                id = it.id,
+                                publicId = it.publicId,
+                                name = it.name,
+                                wishlist = mutableStateListOf<String>().apply {
+                                    addAll(
+                                        it.wishList.map { item ->
+                                            item.itemText
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -662,6 +772,88 @@ fun pollRoomStatus() {
 
     var myName by mutableStateOf<String?>(null)
         private set
+    fun finishGame() {
+
+        val currentRoomId = roomId ?: return
+
+        viewModelScope.launch {
+
+            try {
+
+                repository.finishRoom(currentRoomId)
+                roomHistoryManager.saveRoom(
+                    SavedRoom(
+                        currentRoomId,
+                        roomCode ?: "",
+                        System.currentTimeMillis()
+                    )
+                )
+
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+            }
+        }
+    }
+    fun finishOnePhoneGame(
+        onFinished: () -> Unit = {}
+    ) {
+
+        val currentRoomId = roomId ?: return
+
+        viewModelScope.launch {
+
+            try {
+
+                repository.finishRoom(currentRoomId)
+
+                roomHistoryManager.saveRoom(
+                    SavedRoom(
+                        currentRoomId,
+                        roomCode ?: "",
+                        System.currentTimeMillis()
+                    )
+                )
+
+                onFinished()
+
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+            }
+        }
+    }
+    fun goHome() {
+
+        revealedReceiver = null
+        revealedWishlist = emptyList()
+
+        isRevealLoaded = false
+        isRevealLoading = false
+
+        currentPlayerIndex = 0
+
+        pairs = emptyMap()
+
+        participants.clear()
+
+        roomId = null
+        roomCode = null
+
+        currentScreen = "HOME"
+    }
+    fun saveCurrentRoomLocally() {
+
+        val currentRoomId = roomId ?: return
+
+        roomHistoryManager.saveRoom(
+            SavedRoom(
+                currentRoomId,
+                roomCode ?: "",
+                System.currentTimeMillis()
+            )
+        )
+    }
 
 
 

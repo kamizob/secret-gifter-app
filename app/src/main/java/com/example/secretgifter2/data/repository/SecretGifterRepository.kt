@@ -41,4 +41,7 @@ class SecretGifterRepository {
 
     suspend fun getRoomStatus(roomId: Int) =
         api.getRoomStatus(roomId)
+
+    suspend fun finishRoom(roomId: Int) =
+        api.finishRoom(roomId)
 }
